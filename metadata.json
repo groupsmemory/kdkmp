@@ -1,0 +1,6 @@
+{
+  "name": "PKS Pamekasan Metrics Dashboard",
+  "description": "Dashboard for viewing PKS Pamekasan routing metrics and status.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
