@@ -65,14 +65,22 @@ export async function getPksPamekasanMetrics(input: { queryId: string, timestamp
   }
 
   if (ratelimit) {
-    const { success, limit, remaining, reset } = await ratelimit.limit(`ratelimit_${ip}`);
-    if (!success) {
-      return {
-        success: false as const,
-        error: "Rate limit exceeded. Please try again later.",
-        status: 429,
-        rateLimitInfo: { limit, remaining, reset }
-      };
+    try {
+      const { success, limit, remaining, reset } = await ratelimit.limit(`ratelimit_${ip}`);
+      if (!success) {
+        return {
+          success: false as const,
+          error: "Rate limit exceeded. Please try again later.",
+          status: 429,
+          rateLimitInfo: { limit, remaining, reset }
+        };
+      }
+    } catch (e: any) {
+      if (e?.message?.includes("WRONGPASS")) {
+        console.warn("Upstash Redis rate limiting bypassed: Invalid credentials (WRONGPASS).");
+      } else {
+        console.warn("Rate limiting failed. Bypassing...", e?.message);
+      }
     }
   } else {
     console.warn("Upstash credentials missing. Rate limiting is currently bypassed.");
