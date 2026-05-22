@@ -47,7 +47,7 @@ const PHASES: Phase[] = [
       { id: '1.8', title: 'Deploy ke Vercel (connect GitHub repo)', notes: 'Set env vars di Vercel Dashboard' },
       { id: '1.9', title: 'Verifikasi deployment live + static pages accessible' },
       { id: '1.10', title: 'Setup domain custom (jasasaja.co.id)', notes: 'Opsional di fase ini' },
-      { id: '1.11', title: 'Pilih auth strategy (NextAuth.js / custom JWT)', notes: 'Rekomendasi: NextAuth.js credentials' },
+      { id: '1.11', title: 'Pilih auth strategy (NextAuth.js / custom JWT)', notes: 'Implementasi: Custom JWT HMAC-SHA256 + httpOnly cookie' },
       { id: '1.12', title: 'Buat tabel users + relasi ke tenants' },
       { id: '1.13', title: 'Implementasi login page (brutalist #FFFFFF/#1A1A1A)' },
       { id: '1.14', title: 'Middleware: inject app.current_tenant_id ke DB session', notes: 'Kritis untuk RLS' },
@@ -154,6 +154,44 @@ const PHASES: Phase[] = [
 const STORAGE_KEY = 'kdkmp_dev_progress';
 const NOTES_KEY = 'kdkmp_dev_notes';
 
+// Tasks yang sudah selesai berdasarkan implementasi aktual
+const DEFAULT_COMPLETED: Record<string, boolean> = {
+  // Fase 1: Foundation & Infrastructure
+  '1.1': true,  // NeonDB Free created
+  '1.2': true,  // schema.sql dijalankan
+  '1.3': true,  // 13 tenant seed verified
+  '1.4': true,  // Upstash Redis Free created
+  '1.5': true,  // .env.local setup
+  '1.6': true,  // npm install
+  '1.7': true,  // npm run build sukses
+  '1.8': true,  // Deploy ke Vercel
+  '1.9': true,  // Deployment live verified
+  '1.11': true, // Auth strategy: Custom JWT httpOnly cookie
+  '1.12': true, // Tabel users + relasi tenants (migration 001)
+  '1.13': true, // Login page brutalist + dark/light mode
+  '1.14': true, // Middleware: set_config tenant_id via session JWT
+  '1.15': true, // Proteksi route /dashboard dan /pos
+  // Fase 2: Core POS Engine
+  '2.1': true,  // Halaman /pos dengan layout kasir
+  '2.2': true,  // Dexie.js encrypted store (AES-GCM 256-bit)
+  '2.3': true,  // Form input transaksi (katalog, qty, metode bayar)
+  '2.4': true,  // Generate idempotencyKey UUID v4
+  '2.5': true,  // Simpan ke IndexedDB terenkripsi
+  '2.6': true,  // API route /api/v1/pos/transaction
+  '2.7': true,  // Auto-sync saat online (setupAutoSync)
+  '2.8': true,  // Indikator status sync (online/offline/syncing)
+  '2.9': true,  // POSLockout.tsx Zustand cash tracking
+  '2.11': true, // Halaman /pos/tutup-buku
+  '2.12': true, // Agregasi total kas hari ini
+  '2.13': true, // API route /api/v1/pos/daily-closing
+  // Fase 3: Akuntansi & Laporan
+  '3.1': true,  // Halaman /laporan/neraca
+  '3.2': true,  // Halaman /laporan/laba-rugi
+  '3.3': true,  // Halaman /laporan/jurnal-umum
+  '3.4': true,  // Filter per periode (bulan/tahun)
+  '3.5': true,  // Kalkulator SHU & PADes (halaman terpisah)
+};
+
 // ═══════════════════════════════════════════════════════════════
 // KOMPONEN UTAMA
 // ═══════════════════════════════════════════════════════════════
@@ -164,10 +202,16 @@ export default function DevDashboard() {
   const [activePhase, setActivePhase] = useState('fase-1');
   const [mounted, setMounted] = useState(false);
 
-  // Load dari localStorage
+  // Load dari localStorage (merge dengan default completed)
   useEffect(() => {
     const saved = localStorage.getItem(STORAGE_KEY);
-    if (saved) setCompleted(JSON.parse(saved));
+    if (saved) {
+      const parsed = JSON.parse(saved);
+      // Merge: default completed + user overrides
+      setCompleted({ ...DEFAULT_COMPLETED, ...parsed });
+    } else {
+      setCompleted(DEFAULT_COMPLETED);
+    }
     const notes = localStorage.getItem(NOTES_KEY);
     if (notes) setDailyNotes(notes);
     setMounted(true);
