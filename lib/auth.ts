@@ -14,7 +14,7 @@
  * ============================================================================
  */
 
-import { NextRequest } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 
 // ═══════════════════════════════════════════════════════════════
 // KONSTANTA
@@ -43,7 +43,13 @@ export interface SessionPayload {
 function getSecret(): Uint8Array {
   const secret = process.env.AUTH_SECRET;
   if (!secret) {
-    throw new Error('[Auth] AUTH_SECRET environment variable is required. Generate with: openssl rand -hex 32');
+    // In production, this should always be set. In build time, this function
+    // is never called so we use a placeholder that will never actually sign tokens.
+    if (process.env.NODE_ENV === 'production') {
+      throw new Error('[Auth] AUTH_SECRET environment variable is required.');
+    }
+    // Dev fallback — never use in production
+    return new TextEncoder().encode('dev-only-secret-do-not-use-in-production');
   }
   return new TextEncoder().encode(secret);
 }
@@ -159,10 +165,12 @@ export async function requireAuth(request: NextRequest): Promise<
 > {
   const session = await getSession(request);
   if (!session) {
-    const { NextResponse: NR } = await import('next/server');
     return {
       session: null,
-      error: NR.json({ error: 'Unauthorized — session tidak valid atau expired.' }, { status: 401 }),
+      error: new NextResponse(
+        JSON.stringify({ error: 'Unauthorized — session tidak valid atau expired.' }),
+        { status: 401, headers: { 'Content-Type': 'application/json' } }
+      ),
     };
   }
   return { session, error: null };
