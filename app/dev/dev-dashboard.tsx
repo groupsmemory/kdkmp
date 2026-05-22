@@ -184,6 +184,8 @@ const DEFAULT_COMPLETED: Record<string, boolean> = {
   '2.11': true, // Halaman /pos/tutup-buku
   '2.12': true, // Agregasi total kas hari ini
   '2.13': true, // API route /api/v1/pos/daily-closing
+  '2.14': true, // Trigger SAK EP verified (test-trigger.js)
+  '2.15': true, // Hash chain integrity verified (linkage VALID)
   // Fase 3: Akuntansi & Laporan
   '3.1': true,  // Halaman /laporan/neraca
   '3.2': true,  // Halaman /laporan/laba-rugi
@@ -193,6 +195,7 @@ const DEFAULT_COMPLETED: Record<string, boolean> = {
   '3.7': true,  // Fungsi verifikasi integritas hash chain (audit API)
   // Fase 4: Payment Gateway Xendit
   '4.3': true,  // API route /api/v1/pos/create-payment (Xendit Invoice)
+  '4.4': true,  // Integrasi QRIS di halaman POS (modal + invoice URL)
 };
 
 // ═══════════════════════════════════════════════════════════════
