@@ -58,20 +58,19 @@ function InputField({ id, label, sublabel, value, onChange }: InputFieldProps) {
   };
 
   const handleFocus = (e: React.FocusEvent<HTMLInputElement>) => {
-    // Pilih semua teks saat fokus untuk kemudahan edit
     e.target.select();
   };
 
   return (
     <div className="space-y-2">
-      <label htmlFor={id} className="block text-base sm:text-lg font-bold text-[#FFFFFF]">
+      <label htmlFor={id} className="block text-base sm:text-lg font-bold" style={{ color: 'var(--text-primary)' }}>
         {label}
       </label>
       {sublabel && (
-        <p className="text-sm text-neutral-400">{sublabel}</p>
+        <p className="text-sm" style={{ color: 'var(--text-muted)' }}>{sublabel}</p>
       )}
       <div className="relative">
-        <span className="absolute left-4 top-1/2 -translate-y-1/2 text-neutral-400 font-mono text-base sm:text-lg pointer-events-none">
+        <span className="absolute left-4 top-1/2 -translate-y-1/2 font-mono text-base sm:text-lg pointer-events-none" style={{ color: 'var(--text-muted)' }}>
           Rp
         </span>
         <input
@@ -83,7 +82,12 @@ function InputField({ id, label, sublabel, value, onChange }: InputFieldProps) {
           onFocus={handleFocus}
           placeholder="0"
           aria-label={label}
-          className="w-full min-h-[48px] pl-12 pr-4 py-3 sm:py-4 bg-[#FFFFFF] text-[#1A1A1A] text-lg sm:text-xl font-mono font-bold border-4 border-[#FFFFFF] rounded-none focus:outline-none focus:border-yellow-400 focus:ring-4 focus:ring-yellow-400/30 transition-colors placeholder:text-neutral-400"
+          className="w-full min-h-[48px] pl-12 pr-4 py-3 sm:py-4 text-lg sm:text-xl font-mono font-bold rounded-none transition-colors"
+          style={{
+            border: '4px solid var(--border-primary)',
+            backgroundColor: 'var(--bg-card)',
+            color: 'var(--text-primary)',
+          }}
         />
       </div>
     </div>
@@ -130,17 +134,17 @@ export default function KalkulatorSHU() {
       <div className="max-w-3xl mx-auto space-y-8">
 
         {/* Formula Display */}
-        <div className="border-4 border-[#FFFFFF] p-4 sm:p-6 bg-[#0D0D0D]">
-          <h2 className="text-sm font-mono uppercase tracking-widest text-neutral-400 mb-3">
+        <div className="p-4 sm:p-6" style={{ border: '4px solid var(--border-primary)', backgroundColor: 'var(--bg-secondary)' }}>
+          <h2 className="text-sm font-mono uppercase tracking-widest mb-3" style={{ color: 'var(--text-muted)' }}>
             Formula Legal
           </h2>
-          <div className="space-y-2 font-mono text-sm sm:text-base text-[#FFFFFF]">
+          <div className="space-y-2 font-mono text-sm sm:text-base" style={{ color: 'var(--text-primary)' }}>
             <p>
-              <span className="text-yellow-400 font-bold">SHU<sub>bersih</sub></span>
+              <span className="font-bold" style={{ color: 'var(--accent-warning)' }}>SHU<sub>bersih</sub></span>
               {' = Total Pendapatan − Total Beban − Penyisihan Piutang Ragu'}
             </p>
             <p>
-              <span className="text-green-400 font-bold">PADes</span>
+              <span className="font-bold" style={{ color: 'var(--accent-success)' }}>PADes</span>
               {' ≥ 0,20 × SHU'}
               <sub>bersih</sub>
             </p>
@@ -149,7 +153,7 @@ export default function KalkulatorSHU() {
 
         {/* Input Fields */}
         <fieldset className="space-y-6">
-          <legend className="text-xs font-mono uppercase tracking-widest text-neutral-500 mb-4 border-b border-neutral-700 pb-2 w-full block">
+          <legend className="text-xs font-mono uppercase tracking-widest mb-4 pb-2 w-full block" style={{ color: 'var(--text-faint)', borderBottom: '1px solid var(--border-muted)' }}>
             Masukkan Angka (dalam Rupiah)
           </legend>
 
@@ -184,31 +188,33 @@ export default function KalkulatorSHU() {
             type="button"
             onClick={handleReset}
             aria-label="Reset semua input ke nol"
-            className="min-h-[48px] min-w-[48px] px-6 py-3 bg-[#FFFFFF] text-[#1A1A1A] text-base sm:text-lg font-black uppercase tracking-wider border-4 border-[#FFFFFF] hover:bg-neutral-200 active:bg-neutral-300 focus:outline-none focus:ring-4 focus:ring-yellow-400/50 transition-colors cursor-pointer"
+            className="min-h-[48px] min-w-[48px] px-6 py-3 text-base sm:text-lg font-black uppercase tracking-wider cursor-pointer transition-colors"
+            style={{
+              backgroundColor: 'var(--bg-invert)',
+              color: 'var(--text-invert)',
+              border: '4px solid var(--border-primary)',
+            }}
           >
             ↺ Reset
           </button>
         </div>
 
-        {/* ═══════════════════════════════════════════════════════════ */}
         {/* HASIL KALKULASI */}
-        {/* ═══════════════════════════════════════════════════════════ */}
-        <div className="border-4 border-[#FFFFFF] divide-y-4 divide-[#FFFFFF]">
+        <div style={{ border: '4px solid var(--border-primary)' }}>
           {/* SHU Bersih */}
-          <div className={`p-4 sm:p-6 ${hasil.isPositif ? 'bg-[#0D0D0D]' : 'bg-red-950'}`}>
+          <div className="p-4 sm:p-6" style={{ backgroundColor: 'var(--bg-secondary)' }}>
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
               <div>
-                <p className="text-xs font-mono uppercase tracking-widest text-neutral-400">
+                <p className="text-xs font-mono uppercase tracking-widest" style={{ color: 'var(--text-muted)' }}>
                   Sisa Hasil Usaha (SHU) Bersih
                 </p>
-                <p className="text-sm text-neutral-500 mt-1">
+                <p className="text-sm mt-1" style={{ color: 'var(--text-faint)' }}>
                   = {formatRupiah(totalPendapatan)} − {formatRupiah(totalBeban)} − {formatRupiah(penyisihanPiutang)}
                 </p>
               </div>
               <p
-                className={`text-2xl sm:text-3xl font-black font-mono ${
-                  hasil.isPositif ? 'text-yellow-400' : 'text-red-400'
-                }`}
+                className="text-2xl sm:text-3xl font-black font-mono"
+                style={{ color: hasil.isPositif ? 'var(--accent-warning)' : 'var(--accent-danger)' }}
                 aria-live="polite"
                 aria-label={`SHU Bersih: ${formatRupiah(hasil.shuBersih)}`}
               >
@@ -218,18 +224,19 @@ export default function KalkulatorSHU() {
           </div>
 
           {/* PADes Minimum */}
-          <div className="p-4 sm:p-6 bg-[#0D0D0D]">
+          <div className="p-4 sm:p-6" style={{ backgroundColor: 'var(--bg-secondary)', borderTop: '4px solid var(--border-primary)' }}>
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
               <div>
-                <p className="text-xs font-mono uppercase tracking-widest text-neutral-400">
+                <p className="text-xs font-mono uppercase tracking-widest" style={{ color: 'var(--text-muted)' }}>
                   PADes Minimum (≥ 20% SHU)
                 </p>
-                <p className="text-sm text-neutral-500 mt-1">
+                <p className="text-sm mt-1" style={{ color: 'var(--text-faint)' }}>
                   = 20% × {formatRupiah(Math.max(hasil.shuBersih, 0))}
                 </p>
               </div>
               <p
-                className="text-2xl sm:text-3xl font-black font-mono text-green-400"
+                className="text-2xl sm:text-3xl font-black font-mono"
+                style={{ color: 'var(--accent-success)' }}
                 aria-live="polite"
                 aria-label={`PADes minimum: ${formatRupiah(hasil.padesMinimum)}`}
               >
@@ -237,25 +244,26 @@ export default function KalkulatorSHU() {
               </p>
             </div>
             {!hasil.isPositif && (
-              <p className="mt-3 text-sm text-red-400 font-bold border-l-4 border-red-400 pl-3">
+              <p className="mt-3 text-sm font-bold pl-3" style={{ color: 'var(--accent-danger)', borderLeft: '4px solid var(--accent-danger)' }}>
                 ⚠ SHU negatif (rugi) — tidak ada kewajiban PADes pada periode ini.
               </p>
             )}
           </div>
 
           {/* Sisa SHU setelah PADes */}
-          <div className="p-4 sm:p-6 bg-[#0D0D0D]">
+          <div className="p-4 sm:p-6" style={{ backgroundColor: 'var(--bg-secondary)', borderTop: '4px solid var(--border-primary)' }}>
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
               <div>
-                <p className="text-xs font-mono uppercase tracking-widest text-neutral-400">
+                <p className="text-xs font-mono uppercase tracking-widest" style={{ color: 'var(--text-muted)' }}>
                   Sisa SHU (Setelah PADes)
                 </p>
-                <p className="text-sm text-neutral-500 mt-1">
+                <p className="text-sm mt-1" style={{ color: 'var(--text-faint)' }}>
                   Dapat dialokasikan untuk cadangan, bonus pengurus, dan anggota
                 </p>
               </div>
               <p
-                className="text-2xl sm:text-3xl font-black font-mono text-[#FFFFFF]"
+                className="text-2xl sm:text-3xl font-black font-mono"
+                style={{ color: 'var(--text-primary)' }}
                 aria-live="polite"
                 aria-label={`Sisa SHU: ${formatRupiah(hasil.sisaSHU)}`}
               >
@@ -266,9 +274,9 @@ export default function KalkulatorSHU() {
         </div>
 
         {/* Penjelasan untuk operator desa */}
-        <div className="border-4 border-neutral-700 p-4 sm:p-6 space-y-3">
+        <div className="p-4 sm:p-6 space-y-3" style={{ border: '4px solid var(--border-secondary)' }}>
           <h3 className="text-base font-bold uppercase">Cara Menggunakan</h3>
-          <ol className="list-decimal list-inside space-y-2 text-base text-neutral-300 leading-relaxed">
+          <ol className="list-decimal list-inside space-y-2 text-base leading-relaxed" style={{ color: 'var(--text-secondary)' }}>
             <li>
               <strong>Total Pendapatan</strong> — Masukkan jumlah seluruh pemasukan usaha
               dalam satu periode (bulan/tahun).

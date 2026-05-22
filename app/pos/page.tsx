@@ -22,6 +22,7 @@
 import { useState, useCallback, useEffect, useMemo } from 'react';
 import { useCashStore } from '@/components/POSLockout';
 import POSLockout from '@/components/POSLockout';
+import ThemeToggle from '@/components/ThemeToggle';
 import {
   saveOfflineTransaction,
   synchronizeOfflineQueue,
@@ -95,17 +96,17 @@ function OperatorLogin({ onLogin }: { onLogin: (passphrase: string) => void }) {
   return (
     <div
       className="min-h-screen flex items-center justify-center p-4"
-      style={{ backgroundColor: '#FFFFFF' }}
+      style={{ backgroundColor: 'var(--bg-primary)' }}
     >
       <div className="w-full max-w-sm space-y-6">
         <div className="text-center">
           <h1
             className="text-2xl font-black uppercase tracking-tight"
-            style={{ color: '#1A1A1A' }}
+            style={{ color: 'var(--text-primary)' }}
           >
             Terminal POS
           </h1>
-          <p className="text-sm mt-2" style={{ color: '#6B7280' }}>
+          <p className="text-sm mt-2" style={{ color: 'var(--text-muted)' }}>
             KDKMP JASASAJA — Masukkan passphrase operator untuk membuka terminal kasir.
           </p>
         </div>
@@ -114,7 +115,7 @@ function OperatorLogin({ onLogin }: { onLogin: (passphrase: string) => void }) {
           <label
             htmlFor="operator-passphrase"
             className="block text-sm font-bold uppercase tracking-wider"
-            style={{ color: '#1A1A1A' }}
+            style={{ color: 'var(--text-primary)' }}
           >
             Passphrase Operator
           </label>
@@ -130,18 +131,18 @@ function OperatorLogin({ onLogin }: { onLogin: (passphrase: string) => void }) {
             style={{
               minHeight: '48px',
               padding: '12px 16px',
-              border: '4px solid #1A1A1A',
-              backgroundColor: '#FFFFFF',
-              color: '#1A1A1A',
+              border: '4px solid var(--border-primary)',
+              backgroundColor: 'var(--bg-primary)',
+              color: 'var(--text-primary)',
               outline: 'none',
             }}
             aria-describedby={error ? 'login-error' : 'login-hint'}
           />
-          <p id="login-hint" className="text-xs" style={{ color: '#6B7280' }}>
+          <p id="login-hint" className="text-xs" style={{ color: 'var(--text-muted)' }}>
             Passphrase digunakan untuk mengenkripsi data transaksi lokal (AES-GCM 256-bit).
           </p>
           {error && (
-            <p id="login-error" className="text-sm font-bold" style={{ color: '#DC2626' }} role="alert">
+            <p id="login-error" className="text-sm font-bold" style={{ color: 'var(--accent-danger)' }} role="alert">
               {error}
             </p>
           )}
@@ -153,9 +154,9 @@ function OperatorLogin({ onLogin }: { onLogin: (passphrase: string) => void }) {
             style={{
               minHeight: '48px',
               padding: '14px 24px',
-              backgroundColor: '#1A1A1A',
-              color: '#FFFFFF',
-              border: '4px solid #1A1A1A',
+              backgroundColor: 'var(--bg-invert)',
+              color: 'var(--text-invert)',
+              border: '4px solid var(--border-primary)',
             }}
             aria-label="Masuk ke terminal POS"
           >
@@ -163,9 +164,12 @@ function OperatorLogin({ onLogin }: { onLogin: (passphrase: string) => void }) {
           </button>
         </div>
 
-        <p className="text-center text-xs" style={{ color: '#9CA3AF' }}>
-          Kepatuhan: Inpres 17/2025 • NIST SP 800-132 • PP 60/2008
-        </p>
+        <div className="flex justify-between items-center">
+          <p className="text-xs" style={{ color: 'var(--text-faint)' }}>
+            Kepatuhan: Inpres 17/2025 • NIST SP 800-132
+          </p>
+          <ThemeToggle />
+        </div>
       </div>
     </div>
   );
@@ -354,19 +358,19 @@ function POSTerminal({ passphrase, onLogout }: { passphrase: string; onLogout: (
       {/* POS Lockout Overlay (jika kas > Rp50jt) */}
       <POSLockout />
 
-      <div className="min-h-screen font-sans" style={{ backgroundColor: '#FFFFFF', color: '#1A1A1A' }}>
+      <div className="min-h-screen font-sans" style={{ backgroundColor: 'var(--bg-primary)', color: 'var(--text-primary)' }}>
         {/* Header */}
-        <header className="px-4 py-3 sm:px-6" style={{ borderBottom: '4px solid #1A1A1A' }}>
+        <header className="px-4 py-3 sm:px-6" style={{ borderBottom: '4px solid var(--border-primary)' }}>
           <div className="max-w-6xl mx-auto flex items-center justify-between">
             <div>
-              <h1 className="text-lg font-black uppercase tracking-tight" style={{ color: '#1A1A1A' }}>
+              <h1 className="text-lg font-black uppercase tracking-tight" style={{ color: 'var(--text-primary)' }}>
                 Terminal POS
               </h1>
-              <p className="text-xs font-mono" style={{ color: '#6B7280' }}>
+              <p className="text-xs font-mono" style={{ color: 'var(--text-muted)' }}>
                 KDKMP JASASAJA •{' '}
                 <span
                   aria-live="polite"
-                  style={{ color: isOnline ? '#059669' : '#DC2626' }}
+                  style={{ color: isOnline ? 'var(--accent-success)' : 'var(--accent-danger)' }}
                 >
                   {isOnline ? '● Online' : '● Offline (data terenkripsi lokal)'}
                 </span>
@@ -381,7 +385,7 @@ function POSTerminal({ passphrase, onLogout }: { passphrase: string; onLogout: (
                   className="text-xs font-mono px-3 py-2 font-bold uppercase cursor-pointer disabled:opacity-40"
                   style={{
                     minHeight: '48px',
-                    border: '2px solid #1A1A1A',
+                    border: '2px solid var(--border-primary)',
                     backgroundColor: '#FEF3C7',
                     color: '#1A1A1A',
                   }}
@@ -393,18 +397,20 @@ function POSTerminal({ passphrase, onLogout }: { passphrase: string; onLogout: (
 
               {/* Kas Brankas */}
               <div className="text-right">
-                <p className="text-xs font-mono uppercase" style={{ color: '#6B7280' }}>
+                <p className="text-xs font-mono uppercase" style={{ color: 'var(--text-muted)' }}>
                   Kas Brankas
                 </p>
                 <p
                   className="text-sm font-black font-mono"
-                  style={{ color: cashOnHand > 40_000_000 ? '#DC2626' : '#059669' }}
+                  style={{ color: cashOnHand > 40_000_000 ? 'var(--accent-danger)' : 'var(--accent-success)' }}
                   aria-live="polite"
                   aria-label={`Saldo kas brankas ${formatRupiah(cashOnHand)}`}
                 >
                   {formatRupiah(cashOnHand)}
                 </p>
               </div>
+
+              <ThemeToggle />
 
               {/* Navigasi */}
               <a
@@ -414,8 +420,8 @@ function POSTerminal({ passphrase, onLogout }: { passphrase: string; onLogout: (
                   minHeight: '48px',
                   display: 'flex',
                   alignItems: 'center',
-                  border: '2px solid #1A1A1A',
-                  color: '#1A1A1A',
+                  border: '2px solid var(--border-primary)',
+                  color: 'var(--text-primary)',
                 }}
               >
                 Dashboard
@@ -425,8 +431,8 @@ function POSTerminal({ passphrase, onLogout }: { passphrase: string; onLogout: (
                 className="text-xs font-mono font-bold px-3 py-2 uppercase cursor-pointer"
                 style={{
                   minHeight: '48px',
-                  border: '2px solid #DC2626',
-                  color: '#DC2626',
+                  border: '2px solid var(--accent-danger)',
+                  color: 'var(--accent-danger)',
                 }}
                 aria-label="Keluar dari terminal POS"
               >
@@ -443,7 +449,7 @@ function POSTerminal({ passphrase, onLogout }: { passphrase: string; onLogout: (
             <div className="lg:col-span-2">
               <h2
                 className="text-sm font-black uppercase tracking-widest mb-3"
-                style={{ color: '#1A1A1A' }}
+                style={{ color: 'var(--text-primary)' }}
               >
                 Pilih Produk Sembako
               </h2>
@@ -455,17 +461,17 @@ function POSTerminal({ passphrase, onLogout }: { passphrase: string; onLogout: (
                     disabled={isLocked}
                     className="p-3 text-left transition-all cursor-pointer disabled:opacity-30 disabled:cursor-not-allowed active:scale-95"
                     style={{
-                      border: '3px solid #1A1A1A',
-                      backgroundColor: '#FFFFFF',
+                      border: '3px solid var(--border-primary)',
+                      backgroundColor: 'var(--bg-card)',
                       minHeight: '48px',
                       minWidth: '48px',
                     }}
                     aria-label={`Tambah ${product.name} ke keranjang, harga ${formatRupiah(product.price)}`}
                   >
-                    <p className="text-sm font-bold leading-tight" style={{ color: '#1A1A1A' }}>
+                    <p className="text-sm font-bold leading-tight" style={{ color: 'var(--text-primary)' }}>
                       {product.name}
                     </p>
-                    <p className="text-sm font-mono font-bold mt-1" style={{ color: '#059669' }}>
+                    <p className="text-sm font-mono font-bold mt-1" style={{ color: 'var(--accent-success)' }}>
                       {formatRupiah(product.price)}
                     </p>
                   </button>
@@ -476,16 +482,16 @@ function POSTerminal({ passphrase, onLogout }: { passphrase: string; onLogout: (
             {/* ═══ Keranjang & Pembayaran ═══ */}
             <div className="space-y-4">
               {/* Keranjang */}
-              <div className="p-4" style={{ border: '4px solid #1A1A1A' }}>
+              <div className="p-4" style={{ border: '4px solid var(--border-primary)' }}>
                 <h2
                   className="text-sm font-black uppercase tracking-widest mb-3"
-                  style={{ color: '#1A1A1A' }}
+                  style={{ color: 'var(--text-primary)' }}
                 >
                   Keranjang ({cartItemCount} item)
                 </h2>
 
                 {cart.length === 0 ? (
-                  <p className="text-sm py-6 text-center" style={{ color: '#9CA3AF' }}>
+                  <p className="text-sm py-6 text-center" style={{ color: 'var(--text-faint)' }}>
                     Belum ada item. Tap produk untuk menambahkan.
                   </p>
                 ) : (
@@ -494,13 +500,13 @@ function POSTerminal({ passphrase, onLogout }: { passphrase: string; onLogout: (
                       <div
                         key={item.id}
                         className="flex items-center justify-between py-2"
-                        style={{ borderBottom: '2px solid #E5E7EB' }}
+                        style={{ borderBottom: '2px solid var(--border-muted)' }}
                       >
                         <div className="flex-1 min-w-0">
-                          <p className="text-sm font-bold truncate" style={{ color: '#1A1A1A' }}>
+                          <p className="text-sm font-bold truncate" style={{ color: 'var(--text-primary)' }}>
                             {item.name}
                           </p>
-                          <p className="text-xs font-mono" style={{ color: '#6B7280' }}>
+                          <p className="text-xs font-mono" style={{ color: 'var(--text-muted)' }}>
                             {formatRupiah(item.price)} × {item.qty} = {formatRupiah(item.price * item.qty)}
                           </p>
                         </div>
@@ -511,9 +517,9 @@ function POSTerminal({ passphrase, onLogout }: { passphrase: string; onLogout: (
                             style={{
                               width: '48px',
                               height: '48px',
-                              border: '3px solid #1A1A1A',
-                              backgroundColor: '#FFFFFF',
-                              color: '#1A1A1A',
+                              border: '3px solid var(--border-primary)',
+                              backgroundColor: 'var(--bg-card)',
+                              color: 'var(--text-primary)',
                             }}
                             aria-label={`Kurangi jumlah ${item.name}`}
                           >
@@ -521,7 +527,7 @@ function POSTerminal({ passphrase, onLogout }: { passphrase: string; onLogout: (
                           </button>
                           <span
                             className="text-sm font-mono font-bold w-8 text-center"
-                            style={{ color: '#1A1A1A' }}
+                            style={{ color: 'var(--text-primary)' }}
                             aria-label={`Jumlah ${item.name}: ${item.qty}`}
                           >
                             {item.qty}
@@ -532,9 +538,9 @@ function POSTerminal({ passphrase, onLogout }: { passphrase: string; onLogout: (
                             style={{
                               width: '48px',
                               height: '48px',
-                              border: '3px solid #1A1A1A',
-                              backgroundColor: '#FFFFFF',
-                              color: '#1A1A1A',
+                              border: '3px solid var(--border-primary)',
+                              backgroundColor: 'var(--bg-card)',
+                              color: 'var(--text-primary)',
                             }}
                             aria-label={`Tambah jumlah ${item.name}`}
                           >
@@ -546,9 +552,9 @@ function POSTerminal({ passphrase, onLogout }: { passphrase: string; onLogout: (
                             style={{
                               width: '48px',
                               height: '48px',
-                              border: '3px solid #DC2626',
-                              backgroundColor: '#FFFFFF',
-                              color: '#DC2626',
+                              border: '3px solid var(--accent-danger)',
+                              backgroundColor: 'var(--bg-card)',
+                              color: 'var(--accent-danger)',
                             }}
                             aria-label={`Hapus ${item.name} dari keranjang`}
                           >
@@ -561,14 +567,14 @@ function POSTerminal({ passphrase, onLogout }: { passphrase: string; onLogout: (
                 )}
 
                 {/* Total */}
-                <div className="mt-3 pt-3" style={{ borderTop: '4px solid #1A1A1A' }}>
+                <div className="mt-3 pt-3" style={{ borderTop: '4px solid var(--border-primary)' }}>
                   <div className="flex justify-between items-center">
-                    <span className="text-sm font-black uppercase" style={{ color: '#1A1A1A' }}>
+                    <span className="text-sm font-black uppercase" style={{ color: 'var(--text-primary)' }}>
                       Total
                     </span>
                     <span
                       className="text-2xl font-black font-mono"
-                      style={{ color: '#1A1A1A' }}
+                      style={{ color: 'var(--text-primary)' }}
                       aria-live="polite"
                       aria-label={`Total belanja ${formatRupiah(cartTotal)}`}
                     >
@@ -579,10 +585,10 @@ function POSTerminal({ passphrase, onLogout }: { passphrase: string; onLogout: (
               </div>
 
               {/* Metode Pembayaran */}
-              <div className="p-4" style={{ border: '4px solid #1A1A1A' }}>
+              <div className="p-4" style={{ border: '4px solid var(--border-primary)' }}>
                 <h2
                   className="text-sm font-black uppercase tracking-widest mb-3"
-                  style={{ color: '#1A1A1A' }}
+                  style={{ color: 'var(--text-primary)' }}
                 >
                   Metode Bayar
                 </h2>
@@ -593,9 +599,9 @@ function POSTerminal({ passphrase, onLogout }: { passphrase: string; onLogout: (
                     style={{
                       minHeight: '48px',
                       minWidth: '48px',
-                      border: paymentMethod === 'CASH' ? '4px solid #1A1A1A' : '3px solid #D1D5DB',
-                      backgroundColor: paymentMethod === 'CASH' ? '#1A1A1A' : '#FFFFFF',
-                      color: paymentMethod === 'CASH' ? '#FFFFFF' : '#1A1A1A',
+                      border: paymentMethod === 'CASH' ? '4px solid var(--border-primary)' : '3px solid var(--border-secondary)',
+                      backgroundColor: paymentMethod === 'CASH' ? 'var(--bg-invert)' : 'var(--bg-card)',
+                      color: paymentMethod === 'CASH' ? 'var(--text-invert)' : 'var(--text-primary)',
                     }}
                     aria-pressed={paymentMethod === 'CASH'}
                     aria-label="Pilih metode pembayaran tunai"
@@ -608,9 +614,9 @@ function POSTerminal({ passphrase, onLogout }: { passphrase: string; onLogout: (
                     style={{
                       minHeight: '48px',
                       minWidth: '48px',
-                      border: paymentMethod === 'QRIS' ? '4px solid #1A1A1A' : '3px solid #D1D5DB',
-                      backgroundColor: paymentMethod === 'QRIS' ? '#1A1A1A' : '#FFFFFF',
-                      color: paymentMethod === 'QRIS' ? '#FFFFFF' : '#1A1A1A',
+                      border: paymentMethod === 'QRIS' ? '4px solid var(--border-primary)' : '3px solid var(--border-secondary)',
+                      backgroundColor: paymentMethod === 'QRIS' ? 'var(--bg-invert)' : 'var(--bg-card)',
+                      color: paymentMethod === 'QRIS' ? 'var(--text-invert)' : 'var(--text-primary)',
                     }}
                     aria-pressed={paymentMethod === 'QRIS'}
                     aria-label="Pilih metode pembayaran QRIS"
@@ -628,9 +634,9 @@ function POSTerminal({ passphrase, onLogout }: { passphrase: string; onLogout: (
                 style={{
                   minHeight: '56px',
                   padding: '16px',
-                  backgroundColor: cart.length > 0 ? '#1A1A1A' : '#E5E7EB',
-                  color: cart.length > 0 ? '#FFFFFF' : '#9CA3AF',
-                  border: '4px solid #1A1A1A',
+                  backgroundColor: cart.length > 0 ? 'var(--bg-invert)' : 'var(--bg-tertiary)',
+                  color: cart.length > 0 ? 'var(--text-invert)' : 'var(--text-faint)',
+                  border: '4px solid var(--border-primary)',
                 }}
                 aria-label={cart.length > 0 ? `Bayar ${formatRupiah(cartTotal)} dengan ${paymentMethod}` : 'Keranjang kosong'}
               >
@@ -641,18 +647,18 @@ function POSTerminal({ passphrase, onLogout }: { passphrase: string; onLogout: (
               {lastReceipt && (
                 <div
                   className="p-3"
-                  style={{ border: '3px solid #059669', backgroundColor: '#ECFDF5' }}
+                  style={{ border: '3px solid var(--accent-success)', backgroundColor: 'var(--bg-secondary)' }}
                   role="status"
                   aria-live="polite"
                 >
-                  <p className="text-xs font-mono font-bold uppercase" style={{ color: '#059669' }}>
+                  <p className="text-xs font-mono font-bold uppercase" style={{ color: 'var(--accent-success)' }}>
                     ✓ Transaksi Berhasil — {lastReceipt.time}
                   </p>
-                  <p className="text-sm font-mono font-bold mt-1" style={{ color: '#1A1A1A' }}>
+                  <p className="text-sm font-mono font-bold mt-1" style={{ color: 'var(--text-primary)' }}>
                     {formatRupiah(lastReceipt.total)} • {lastReceipt.method}
                   </p>
                   {!isOnline && (
-                    <p className="text-xs mt-1" style={{ color: '#6B7280' }}>
+                    <p className="text-xs mt-1" style={{ color: 'var(--text-muted)' }}>
                       Data terenkripsi di perangkat. Akan disinkronkan saat online.
                     </p>
                   )}
@@ -663,11 +669,11 @@ function POSTerminal({ passphrase, onLogout }: { passphrase: string; onLogout: (
               {syncStatus === 'success' && (
                 <div
                   className="p-2 text-center"
-                  style={{ border: '2px solid #059669', backgroundColor: '#ECFDF5' }}
+                  style={{ border: '2px solid var(--accent-success)', backgroundColor: 'var(--bg-secondary)' }}
                   role="status"
                   aria-live="polite"
                 >
-                  <p className="text-xs font-bold" style={{ color: '#059669' }}>
+                  <p className="text-xs font-bold" style={{ color: 'var(--accent-success)' }}>
                     ✓ Semua transaksi berhasil disinkronkan
                   </p>
                 </div>
@@ -675,10 +681,10 @@ function POSTerminal({ passphrase, onLogout }: { passphrase: string; onLogout: (
               {syncStatus === 'error' && (
                 <div
                   className="p-2 text-center"
-                  style={{ border: '2px solid #DC2626', backgroundColor: '#FEF2F2' }}
+                  style={{ border: '2px solid var(--accent-danger)', backgroundColor: 'var(--bg-secondary)' }}
                   role="alert"
                 >
-                  <p className="text-xs font-bold" style={{ color: '#DC2626' }}>
+                  <p className="text-xs font-bold" style={{ color: 'var(--accent-danger)' }}>
                     ✗ Gagal sinkronisasi. Akan dicoba lagi saat koneksi stabil.
                   </p>
                 </div>
@@ -688,8 +694,8 @@ function POSTerminal({ passphrase, onLogout }: { passphrase: string; onLogout: (
         </div>
 
         {/* Footer Info */}
-        <footer className="px-4 py-3 mt-4" style={{ borderTop: '2px solid #E5E7EB' }}>
-          <p className="text-center text-xs font-mono" style={{ color: '#9CA3AF' }}>
+        <footer className="px-4 py-3 mt-4" style={{ borderTop: '2px solid var(--border-muted)' }}>
+          <p className="text-center text-xs font-mono" style={{ color: 'var(--text-faint)' }}>
             Kepatuhan: Inpres 17/2025 • PP 60/2008 (SPIP) • Audit BPKP • Enkripsi AES-GCM 256-bit • Batas Brankas Rp50 Juta
           </p>
         </footer>

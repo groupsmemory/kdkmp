@@ -1,14 +1,14 @@
 /**
  * ============================================================================
- * HALAMAN UTAMA — JASASAJA KDKMP (Dark Mode Brutalist)
+ * HALAMAN UTAMA — JASASAJA KDKMP (Brutalist, Dark/Light Mode)
  * ============================================================================
  * Static Generation (SSG) — Zero runtime cost
  * Branding: JASASAJA — Platform KDKMP PT Agrinas Pangan Nusantara
- * Desain: Dark brutalist (#0A0A0A background, #FFFFFF text)
  * ============================================================================
  */
 
 import { Metadata } from 'next';
+import ThemeToggle from '@/components/ThemeToggle';
 
 export const dynamic = 'force-static';
 export const revalidate = false;
@@ -57,23 +57,26 @@ const KECAMATAN = [
 
 export default function HomePage() {
   return (
-    <div className="min-h-screen font-sans" style={{ backgroundColor: '#0A0A0A', color: '#FFFFFF' }}>
+    <div className="min-h-screen font-sans" style={{ backgroundColor: 'var(--bg-primary)', color: 'var(--text-primary)' }}>
       {/* Hero */}
-      <header style={{ borderBottom: '4px solid #FFFFFF' }}>
+      <header style={{ borderBottom: '4px solid var(--border-primary)' }}>
         <div className="max-w-5xl mx-auto px-6 py-16 md:py-24">
-          <span
-            className="inline-block text-[10px] font-mono uppercase tracking-widest px-3 py-1 mb-6"
-            style={{ backgroundColor: '#FFFFFF', color: '#0A0A0A' }}
-          >
-            PT Agrinas Pangan Nusantara &bull; Inpres 17/2025
-          </span>
+          <div className="flex justify-between items-start mb-6">
+            <span
+              className="inline-block text-[10px] font-mono uppercase tracking-widest px-3 py-1"
+              style={{ backgroundColor: 'var(--bg-invert)', color: 'var(--text-invert)' }}
+            >
+              PT Agrinas Pangan Nusantara &bull; Inpres 17/2025
+            </span>
+            <ThemeToggle />
+          </div>
 
           <h1 className="text-4xl md:text-6xl font-black uppercase tracking-tight leading-none mb-4">
             JASASAJA
           </h1>
-          <p className="text-lg md:text-xl max-w-2xl leading-relaxed" style={{ color: '#A0A0A0' }}>
+          <p className="text-lg md:text-xl max-w-2xl leading-relaxed" style={{ color: 'var(--text-muted)' }}>
             Platform digital manajemen{' '}
-            <strong style={{ color: '#FFFFFF' }}>Koperasi Desa dan Kelurahan Merah Putih (KDKMP)</strong>{' '}
+            <strong style={{ color: 'var(--text-primary)' }}>Koperasi Desa dan Kelurahan Merah Putih (KDKMP)</strong>{' '}
             untuk {STATS.totalGerai} gerai percontohan di {STATS.region}.
           </p>
 
@@ -85,9 +88,9 @@ export default function HomePage() {
               style={{
                 minHeight: '48px',
                 padding: '14px 28px',
-                backgroundColor: '#FFFFFF',
-                color: '#0A0A0A',
-                border: '3px solid #FFFFFF',
+                backgroundColor: 'var(--bg-invert)',
+                color: 'var(--text-invert)',
+                border: '3px solid var(--border-primary)',
               }}
             >
               Masuk Dashboard Kasir →
@@ -99,8 +102,8 @@ export default function HomePage() {
                 minHeight: '48px',
                 padding: '14px 28px',
                 backgroundColor: 'transparent',
-                color: '#FFFFFF',
-                border: '3px solid #FFFFFF',
+                color: 'var(--text-primary)',
+                border: '3px solid var(--border-primary)',
               }}
             >
               Kalkulator SHU &amp; PADes →
@@ -110,23 +113,23 @@ export default function HomePage() {
       </header>
 
       {/* Stats */}
-      <section style={{ borderBottom: '4px solid #FFFFFF' }}>
-        <div className="max-w-5xl mx-auto px-6 py-12 grid grid-cols-1 md:grid-cols-3 gap-0 md:divide-x-4 divide-white/20">
+      <section style={{ borderBottom: '4px solid var(--border-primary)' }}>
+        <div className="max-w-5xl mx-auto px-6 py-12 grid grid-cols-1 md:grid-cols-3 gap-0 md:divide-x-4" style={{ borderColor: 'var(--border-secondary)' }}>
           <div className="text-center py-6 md:py-0">
             <p className="text-4xl md:text-5xl font-black">{STATS.totalGerai}</p>
-            <p className="text-xs font-mono uppercase tracking-widest mt-1" style={{ color: '#6B6B6B' }}>
+            <p className="text-xs font-mono uppercase tracking-widest mt-1" style={{ color: 'var(--text-faint)' }}>
               Gerai Aktif
             </p>
           </div>
           <div className="text-center py-6 md:py-0">
             <p className="text-4xl md:text-5xl font-black">{STATS.kecamatan}</p>
-            <p className="text-xs font-mono uppercase tracking-widest mt-1" style={{ color: '#6B6B6B' }}>
+            <p className="text-xs font-mono uppercase tracking-widest mt-1" style={{ color: 'var(--text-faint)' }}>
               Kecamatan
             </p>
           </div>
           <div className="text-center py-6 md:py-0">
             <p className="text-4xl md:text-5xl font-black">Rp0</p>
-            <p className="text-xs font-mono uppercase tracking-widest mt-1" style={{ color: '#6B6B6B' }}>
+            <p className="text-xs font-mono uppercase tracking-widest mt-1" style={{ color: 'var(--text-faint)' }}>
               Biaya Infrastruktur/Bulan
             </p>
           </div>
@@ -134,7 +137,7 @@ export default function HomePage() {
       </section>
 
       {/* Fitur */}
-      <section style={{ borderBottom: '4px solid #FFFFFF' }}>
+      <section style={{ borderBottom: '4px solid var(--border-primary)' }}>
         <div className="max-w-5xl mx-auto px-6 py-12">
           <h2 className="text-xl font-black uppercase tracking-tight mb-6">
             Arsitektur Enterprise
@@ -144,21 +147,21 @@ export default function HomePage() {
               <div
                 key={f}
                 className="flex items-start gap-3 p-4"
-                style={{ border: '2px solid #333333' }}
+                style={{ border: '2px solid var(--border-secondary)' }}
               >
-                <span className="text-green-400 font-black text-lg leading-none">✓</span>
-                <span className="text-sm font-medium" style={{ color: '#E0E0E0' }}>{f}</span>
+                <span className="font-black text-lg leading-none" style={{ color: 'var(--accent-success)' }}>✓</span>
+                <span className="text-sm font-medium" style={{ color: 'var(--text-secondary)' }}>{f}</span>
               </div>
             ))}
           </div>
-          <p className="mt-6 text-xs" style={{ color: '#555555' }}>
+          <p className="mt-6 text-xs" style={{ color: 'var(--text-faint)' }}>
             Standar: SAK EP (Entitas Privat) &bull; Kepatuhan: BPK &amp; BPKP &bull; Batas Brankas: Rp50.000.000
           </p>
         </div>
       </section>
 
       {/* Cakupan Wilayah */}
-      <section style={{ borderBottom: '4px solid #FFFFFF' }}>
+      <section style={{ borderBottom: '4px solid var(--border-primary)' }}>
         <div className="max-w-5xl mx-auto px-6 py-12">
           <h2 className="text-xl font-black uppercase tracking-tight mb-6">
             Cakupan Wilayah Pamekasan
@@ -168,13 +171,13 @@ export default function HomePage() {
               <span
                 key={kec}
                 className="px-3 py-1.5 text-xs font-mono uppercase tracking-wider"
-                style={{ border: '2px solid #444444', color: '#CCCCCC' }}
+                style={{ border: '2px solid var(--border-secondary)', color: 'var(--text-secondary)' }}
               >
                 {kec}
               </span>
             ))}
           </div>
-          <p className="mt-4 text-xs" style={{ color: '#555555' }}>
+          <p className="mt-4 text-xs" style={{ color: 'var(--text-faint)' }}>
             Seluruh 13 kecamatan tercakup. Arsitektur offline-first untuk wilayah blank spot Pamekasan Utara.
           </p>
         </div>
@@ -183,10 +186,10 @@ export default function HomePage() {
       {/* Footer */}
       <footer className="px-6 py-8">
         <div className="max-w-5xl mx-auto flex flex-col sm:flex-row justify-between items-center gap-4">
-          <p className="text-xs font-mono" style={{ color: '#555555' }}>
+          <p className="text-xs font-mono" style={{ color: 'var(--text-faint)' }}>
             © 2025 JASASAJA — PT Memory Groups Sejahtera
           </p>
-          <p className="text-xs font-mono" style={{ color: '#555555' }}>
+          <p className="text-xs font-mono" style={{ color: 'var(--text-faint)' }}>
             Lisensi SaaS untuk PT Agrinas Pangan Nusantara (Persero)
           </p>
         </div>
