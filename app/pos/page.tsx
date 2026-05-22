@@ -44,6 +44,13 @@ interface CartItem {
 
 type SyncStatus = 'idle' | 'syncing' | 'success' | 'error';
 
+interface QrisPayment {
+  invoiceId: string;
+  invoiceUrl: string;
+  amount: number;
+  expiresAt: string;
+}
+
 
 // ═══════════════════════════════════════════════════════════════
 // KATALOG PRODUK SEMBAKO (MVP hardcoded, nanti dari DB)
@@ -203,6 +210,8 @@ function POSTerminal({ passphrase, onLogout }: { passphrase: string; onLogout: (
   const [isOnline, setIsOnline] = useState(true);
   const [syncStatus, setSyncStatus] = useState<SyncStatus>('idle');
   const [pendingCount, setPendingCount] = useState(0);
+  const [qrisPayment, setQrisPayment] = useState<QrisPayment | null>(null);
+  const [qrisLoading, setQrisLoading] = useState(false);
 
   // ─── Online/Offline listener ───────────────────────────────
   useEffect(() => {
@@ -296,6 +305,51 @@ function POSTerminal({ passphrase, onLogout }: { passphrase: string; onLogout: (
   const processPayment = useCallback(async () => {
     if (cart.length === 0 || isProcessing || isLocked) return;
 
+    // QRIS: buat invoice Xendit dulu
+    if (paymentMethod === 'QRIS' && isOnline) {
+      setQrisLoading(true);
+      try {
+        const response = await fetch('/api/v1/pos/create-payment', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'x-idempotency-key': crypto.randomUUID(),
+          },
+          body: JSON.stringify({
+            amount: cartTotal,
+            description: cart.map((i) => `${i.name} x${i.qty}`).join(', '),
+            items: cart.map((i) => ({ name: i.name, qty: i.qty, price: i.price })),
+          }),
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+          setQrisPayment({
+            invoiceId: data.invoiceId,
+            invoiceUrl: data.invoiceUrl,
+            amount: data.amount,
+            expiresAt: data.expiresAt,
+          });
+        } else {
+          // Fallback: simpan offline jika payment gateway gagal
+          await saveTransactionOffline();
+        }
+      } catch {
+        // Offline atau error: simpan lokal
+        await saveTransactionOffline();
+      } finally {
+        setQrisLoading(false);
+      }
+      return;
+    }
+
+    // CASH atau QRIS offline: simpan langsung ke IndexedDB
+    await saveTransactionOffline();
+  }, [cart, cartTotal, paymentMethod, isProcessing, isLocked, isOnline]);
+
+  // ─── Simpan transaksi ke IndexedDB (untuk CASH atau fallback QRIS) ───
+  const saveTransactionOffline = useCallback(async () => {
+    if (isProcessing) return;
     setIsProcessing(true);
 
     try {
@@ -313,28 +367,22 @@ function POSTerminal({ passphrase, onLogout }: { passphrase: string; onLogout: (
         createdAt: timestamp,
       };
 
-      // Simpan ke IndexedDB terenkripsi (AES-GCM 256-bit)
       await saveOfflineTransaction(transaction, passphrase);
 
-      // Update Zustand kas jika CASH
       if (paymentMethod === 'CASH') {
         addCash(cartTotal);
       }
 
-      // Update pending count
       setPendingCount((prev) => prev + 1);
 
-      // Simpan receipt
       setLastReceipt({
         total: cartTotal,
         method: paymentMethod,
         time: new Date().toLocaleTimeString('id-ID'),
       });
 
-      // Reset cart
       setCart([]);
 
-      // Auto-sync jika online
       if (isOnline) {
         synchronizeOfflineQueue(passphrase).then((result) => {
           if (result.successCount > 0) {
@@ -347,7 +395,23 @@ function POSTerminal({ passphrase, onLogout }: { passphrase: string; onLogout: (
     } finally {
       setIsProcessing(false);
     }
-  }, [cart, cartTotal, paymentMethod, isProcessing, isLocked, addCash, passphrase, isOnline]);
+  }, [cart, cartTotal, paymentMethod, isProcessing, addCash, passphrase, isOnline]);
+
+  // ─── Konfirmasi QRIS berhasil (setelah pembeli bayar) ───
+  const confirmQrisPayment = useCallback(() => {
+    setLastReceipt({
+      total: qrisPayment?.amount || cartTotal,
+      method: 'QRIS',
+      time: new Date().toLocaleTimeString('id-ID'),
+    });
+    setCart([]);
+    setQrisPayment(null);
+  }, [qrisPayment, cartTotal]);
+
+  // ─── Batalkan QRIS ───
+  const cancelQrisPayment = useCallback(() => {
+    setQrisPayment(null);
+  }, []);
 
   // ═══════════════════════════════════════════════════════════════
   // RENDER
@@ -357,6 +421,84 @@ function POSTerminal({ passphrase, onLogout }: { passphrase: string; onLogout: (
     <>
       {/* POS Lockout Overlay (jika kas > Rp50jt) */}
       <POSLockout />
+
+      {/* QRIS Payment Modal */}
+      {qrisPayment && (
+        <div
+          className="fixed inset-0 z-[9998] flex items-center justify-center p-4"
+          style={{ backgroundColor: 'rgba(0,0,0,0.7)' }}
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="qris-title"
+        >
+          <div className="w-full max-w-md p-6 space-y-4" style={{ backgroundColor: 'var(--bg-primary)', border: '4px solid var(--border-primary)' }}>
+            <h2 id="qris-title" className="text-lg font-black uppercase text-center" style={{ color: 'var(--text-primary)' }}>
+              Pembayaran QRIS
+            </h2>
+            <p className="text-center text-sm" style={{ color: 'var(--text-muted)' }}>
+              Arahkan pembeli untuk scan QR atau buka link pembayaran.
+            </p>
+
+            {/* Amount */}
+            <div className="p-4 text-center" style={{ border: '3px solid var(--border-primary)', backgroundColor: 'var(--bg-secondary)' }}>
+              <p className="text-xs font-mono uppercase" style={{ color: 'var(--text-faint)' }}>Total Bayar</p>
+              <p className="text-3xl font-black font-mono" style={{ color: 'var(--accent-success)' }}>
+                {formatRupiah(qrisPayment.amount)}
+              </p>
+            </div>
+
+            {/* Invoice Link */}
+            <a
+              href={qrisPayment.invoiceUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="block w-full text-center font-black uppercase tracking-wider text-sm py-3 cursor-pointer"
+              style={{
+                minHeight: '48px',
+                backgroundColor: 'var(--bg-invert)',
+                color: 'var(--text-invert)',
+                border: '3px solid var(--border-primary)',
+              }}
+            >
+              Buka Halaman Pembayaran ↗
+            </a>
+
+            <p className="text-xs text-center font-mono" style={{ color: 'var(--text-faint)' }}>
+              Invoice berlaku 15 menit • ID: {qrisPayment.invoiceId.slice(0, 8)}...
+            </p>
+
+            {/* Actions */}
+            <div className="grid grid-cols-2 gap-3">
+              <button
+                onClick={confirmQrisPayment}
+                className="font-black uppercase text-sm py-3 cursor-pointer"
+                style={{
+                  minHeight: '48px',
+                  backgroundColor: 'var(--bg-secondary)',
+                  color: 'var(--accent-success)',
+                  border: '3px solid var(--accent-success)',
+                }}
+                aria-label="Konfirmasi pembayaran QRIS berhasil"
+              >
+                ✓ Sudah Bayar
+              </button>
+              <button
+                onClick={cancelQrisPayment}
+                className="font-black uppercase text-sm py-3 cursor-pointer"
+                style={{
+                  minHeight: '48px',
+                  backgroundColor: 'var(--bg-secondary)',
+                  color: 'var(--accent-danger)',
+                  border: '3px solid var(--accent-danger)',
+                }}
+                aria-label="Batalkan pembayaran QRIS"
+              >
+                ✗ Batalkan
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       <div className="min-h-screen font-sans" style={{ backgroundColor: 'var(--bg-primary)', color: 'var(--text-primary)' }}>
         {/* Header */}
@@ -629,7 +771,7 @@ function POSTerminal({ passphrase, onLogout }: { passphrase: string; onLogout: (
               {/* Tombol Bayar */}
               <button
                 onClick={processPayment}
-                disabled={cart.length === 0 || isProcessing || isLocked}
+                disabled={cart.length === 0 || isProcessing || isLocked || qrisLoading}
                 className="w-full font-black uppercase tracking-wider text-lg transition-all disabled:opacity-30 disabled:cursor-not-allowed cursor-pointer active:scale-95"
                 style={{
                   minHeight: '56px',
@@ -640,7 +782,7 @@ function POSTerminal({ passphrase, onLogout }: { passphrase: string; onLogout: (
                 }}
                 aria-label={cart.length > 0 ? `Bayar ${formatRupiah(cartTotal)} dengan ${paymentMethod}` : 'Keranjang kosong'}
               >
-                {isProcessing ? 'Memproses...' : `Bayar ${formatRupiah(cartTotal)}`}
+                {isProcessing || qrisLoading ? 'Memproses...' : `Bayar ${formatRupiah(cartTotal)}`}
               </button>
 
               {/* Receipt terakhir */}
