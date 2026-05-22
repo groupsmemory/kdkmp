@@ -40,18 +40,15 @@ export interface SessionPayload {
 // JWT SIGN/VERIFY (HMAC-SHA256 via Web Crypto API)
 // ═══════════════════════════════════════════════════════════════
 
-function getSecret(): Uint8Array {
+function getSecret(): ArrayBuffer {
   const secret = process.env.AUTH_SECRET;
   if (!secret) {
-    // In production, this should always be set. In build time, this function
-    // is never called so we use a placeholder that will never actually sign tokens.
     if (process.env.NODE_ENV === 'production') {
       throw new Error('[Auth] AUTH_SECRET environment variable is required.');
     }
-    // Dev fallback — never use in production
-    return new TextEncoder().encode('dev-only-secret-do-not-use-in-production');
+    return new TextEncoder().encode('dev-only-secret-do-not-use-in-production').buffer as ArrayBuffer;
   }
-  return new TextEncoder().encode(secret);
+  return new TextEncoder().encode(secret).buffer as ArrayBuffer;
 }
 
 function base64UrlEncode(data: Uint8Array): string {
@@ -75,10 +72,11 @@ async function hmacSign(data: string): Promise<string> {
     false,
     ['sign']
   );
+  const encoded = new TextEncoder().encode(data);
   const signature = await crypto.subtle.sign(
     'HMAC',
     key,
-    new TextEncoder().encode(data)
+    encoded.buffer as ArrayBuffer
   );
   return base64UrlEncode(new Uint8Array(signature));
 }
@@ -92,11 +90,12 @@ async function hmacVerify(data: string, signature: string): Promise<boolean> {
     ['verify']
   );
   const sigBytes = base64UrlDecode(signature);
+  const encoded = new TextEncoder().encode(data);
   return crypto.subtle.verify(
     'HMAC',
     key,
-    sigBytes,
-    new TextEncoder().encode(data)
+    sigBytes.buffer as ArrayBuffer,
+    encoded.buffer as ArrayBuffer
   );
 }
 
