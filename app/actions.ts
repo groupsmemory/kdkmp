@@ -29,24 +29,21 @@ const RequestSchema = z.object({
   timestamp: z.number().int().positive("Timestamp must be a valid positive integer"),
 }).strict();
 
-// Hardcode the ground-truth routing metrics for PKS Pamekasan without variations
-const PKS_PAMEKASAN_METRICS = {
-  region: "PKS Pamekasan",
+// Metrik operasional KDKMP Pamekasan
+const KDKMP_METRICS = {
+  region: "KDKMP Pamekasan",
   latency_ms: 12,
   throughput_mbps: 450,
   status: "active" as const
 };
 
-export async function getPksPamekasanMetrics(input: { queryId: string, timestamp: number }) {
+export async function getKdkmpMetrics(input: { queryId: string, timestamp: number }) {
+  // Idempotensi sekarang ditangani sepenuhnya di middleware.ts (Edge)
   const headersList = await headers();
   const forwardedFor = headersList.get('x-forwarded-for');
   
   let ip = "127.0.0.1";
   
-  // CRITICAL RULE: IP Parsing MUST execute safe array extraction from 'x-forwarded-for': 
-  // perform the .split(',') array operation FIRST, capture index [0], 
-  // and ONLY THEN invoke the .trim() method on the string. 
-  // Never call .trim() directly on the array or before checking existence to prevent runtime crash.
   if (forwardedFor) {
     const parts = forwardedFor.split(',');
     const firstPart = parts[0];
@@ -88,7 +85,7 @@ export async function getPksPamekasanMetrics(input: { queryId: string, timestamp
   
   return {
     success: true as const,
-    data: PKS_PAMEKASAN_METRICS,
+    data: KDKMP_METRICS,
     ip: ip,
     timestamp: Date.now()
   };

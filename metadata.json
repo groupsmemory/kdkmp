@@ -1,6 +1,6 @@
 {
-  "name": "PKS Pamekasan Metrics Dashboard",
-  "description": "Dashboard for viewing PKS Pamekasan routing metrics and status.",
+  "name": "KDKMP JASASAJA Dashboard",
+  "description": "Platform digital manajemen Koperasi Desa dan Kelurahan Merah Putih (KDKMP) JASASAJA.",
   "requestFramePermissions": [],
   "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
 }
