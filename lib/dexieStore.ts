@@ -115,7 +115,7 @@ export class ClientCryptoService {
 
     const encoder = new TextEncoder();
     const ciphertext = await crypto.subtle.encrypt(
-      { name: 'AES-GCM', iv },
+      { name: 'AES-GCM', iv: iv as BufferSource },
       key,
       encoder.encode(plaintext)
     );
@@ -135,7 +135,7 @@ export class ClientCryptoService {
     const key = await this.deriveKey(passphrase, salt);
 
     const decryptedBuffer = await crypto.subtle.decrypt(
-      { name: 'AES-GCM', iv },
+      { name: 'AES-GCM', iv: iv as BufferSource },
       key,
       ciphertext
     );
