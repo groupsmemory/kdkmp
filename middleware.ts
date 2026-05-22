@@ -205,5 +205,5 @@ function buildErrorResponse(message: string, status: number): NextResponse {
 // ═══════════════════════════════════════════════════════════════
 
 export const config = {
-  matcher: ['/api/v1/:path*', '/dashboard/:path*', '/pos/:path*'],
+  matcher: ['/api/v1/:path*', '/dashboard', '/dashboard/:path*', '/pos', '/pos/:path*'],
 };

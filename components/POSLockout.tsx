@@ -131,20 +131,20 @@ export default function POSLockout() {
   return (
     <div
       className="fixed inset-0 z-[9999] flex items-center justify-center p-4"
-      style={{ backgroundColor: '#FFFFFF' }}
+      style={{ backgroundColor: 'var(--bg-primary)' }}
       role="alertdialog"
       aria-modal="true"
       aria-labelledby="lockout-title"
       aria-describedby="lockout-desc"
     >
-      <div className="w-full max-w-lg text-center" style={{ color: '#1A1A1A' }}>
+      <div className="w-full max-w-lg text-center" style={{ color: 'var(--text-primary)' }}>
         {/* Ikon Peringatan */}
         <div
           className="mx-auto mb-6 flex items-center justify-center"
           style={{
             width: '80px',
             height: '80px',
-            border: '6px solid #1A1A1A',
+            border: '6px solid var(--border-primary)',
           }}
         >
           <span className="text-4xl font-black" aria-hidden="true">⚠</span>
@@ -154,7 +154,7 @@ export default function POSLockout() {
         <h1
           id="lockout-title"
           className="text-2xl sm:text-3xl font-black uppercase tracking-tight mb-4"
-          style={{ color: '#1A1A1A' }}
+          style={{ color: 'var(--text-primary)' }}
         >
           TRANSAKSI DIBLOKIR
         </h1>
@@ -163,7 +163,7 @@ export default function POSLockout() {
         <p
           id="lockout-desc"
           className="text-base sm:text-lg mb-6 leading-relaxed"
-          style={{ color: '#1A1A1A' }}
+          style={{ color: 'var(--text-primary)' }}
         >
           Saldo kas brankas telah melampaui batas aman{' '}
           <strong>{formatRupiah(CASH_LIMIT)}</strong>.
@@ -174,15 +174,15 @@ export default function POSLockout() {
         {/* Indikator Saldo */}
         <div
           className="mb-8 p-4 text-center"
-          style={{ border: '4px solid #1A1A1A', backgroundColor: '#FEF2F2' }}
+          style={{ border: '4px solid var(--border-primary)', backgroundColor: 'var(--bg-secondary)' }}
         >
           <p className="text-xs font-mono uppercase tracking-widest mb-1">
             Saldo Kas Saat Ini
           </p>
-          <p className="text-3xl sm:text-4xl font-black font-mono" style={{ color: '#DC2626' }}>
+          <p className="text-3xl sm:text-4xl font-black font-mono" style={{ color: 'var(--accent-danger)' }}>
             {formatRupiah(cashOnHand)}
           </p>
-          <p className="text-xs mt-2" style={{ color: '#6B7280' }}>
+          <p className="text-xs mt-2" style={{ color: 'var(--text-muted)' }}>
             Melebihi batas: {formatRupiah(cashOnHand - CASH_LIMIT)}
           </p>
         </div>
@@ -208,9 +208,9 @@ export default function POSLockout() {
             style={{
               minHeight: '48px',
               padding: '12px 16px',
-              border: '4px solid #1A1A1A',
-              backgroundColor: '#FFFFFF',
-              color: '#1A1A1A',
+              border: '4px solid var(--border-primary)',
+              backgroundColor: 'var(--bg-primary)',
+              color: 'var(--text-primary)',
               outline: 'none',
             }}
             aria-describedby={error ? 'deposit-error' : undefined}
@@ -220,7 +220,7 @@ export default function POSLockout() {
             <p
               id="deposit-error"
               className="text-sm font-bold text-left"
-              style={{ color: '#DC2626' }}
+              style={{ color: 'var(--accent-danger)' }}
               role="alert"
             >
               {error}
@@ -236,9 +236,9 @@ export default function POSLockout() {
               minHeight: '48px',
               minWidth: '48px',
               padding: '14px 24px',
-              backgroundColor: '#1A1A1A',
-              color: '#FFFFFF',
-              border: '4px solid #1A1A1A',
+              backgroundColor: 'var(--bg-invert)',
+              color: 'var(--text-invert)',
+              border: '4px solid var(--border-primary)',
             }}
             aria-label="Verifikasi kode setor dan buka blokir POS"
           >
@@ -247,7 +247,7 @@ export default function POSLockout() {
         </div>
 
         {/* Informasi Bantuan */}
-        <p className="mt-6 text-xs" style={{ color: '#6B7280' }}>
+        <p className="mt-6 text-xs" style={{ color: 'var(--text-muted)' }}>
           Hubungi supervisor jika tidak memiliki kode bukti setor.
           <br />
           Kepatuhan: PP 60/2008 (SPIP) • Audit BPKP • Batas Brankas Rp50 Juta

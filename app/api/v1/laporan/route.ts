@@ -41,8 +41,8 @@ export async function GET(request: NextRequest) {
   const client = await db.connect();
 
   try {
-    // Set tenant context untuk RLS
-    await client.query(`SET LOCAL app.current_tenant_id = '${tenantId}'`);
+    // Set tenant context untuk RLS (parameterized — anti SQL injection)
+    await client.query(`SELECT set_config('app.current_tenant_id', $1, true)`, [tenantId]);
 
     // Build date filter
     let dateFilter = '';
@@ -86,6 +86,7 @@ export async function GET(request: NextRequest) {
     }
 
     if (type === 'neraca') {
+      const dateJoinFilter = dateFilter ? `AND le.created_at >= $2::DATE AND le.created_at <= ($3::DATE + INTERVAL '1 day')` : '';
       const result = await client.query(
         `SELECT
           a.type AS account_type,
@@ -98,7 +99,7 @@ export async function GET(request: NextRequest) {
             ELSE COALESCE(SUM(le.credit), 0) - COALESCE(SUM(le.debit), 0)
           END AS balance
         FROM accounts a
-        LEFT JOIN ledger_entries le ON le.account_id = a.id ${dateFilter ? dateFilter.replace(/le\./g, 'le.') : ''}
+        LEFT JOIN ledger_entries le ON le.account_id = a.id AND le.tenant_id = $1::UUID ${dateJoinFilter}
         WHERE a.tenant_id = $1::UUID AND a.type IN ('ASSET', 'LIABILITY', 'EQUITY')
         GROUP BY a.type, a.code, a.name
         ORDER BY a.type, a.code`,
@@ -113,6 +114,7 @@ export async function GET(request: NextRequest) {
     }
 
     if (type === 'laba-rugi') {
+      const dateJoinFilter = dateFilter ? `AND le.created_at >= $2::DATE AND le.created_at <= ($3::DATE + INTERVAL '1 day')` : '';
       const result = await client.query(
         `SELECT
           a.type AS account_type,
@@ -126,7 +128,7 @@ export async function GET(request: NextRequest) {
             ELSE 0
           END AS balance
         FROM accounts a
-        LEFT JOIN ledger_entries le ON le.account_id = a.id ${dateFilter ? dateFilter.replace(/le\./g, 'le.') : ''}
+        LEFT JOIN ledger_entries le ON le.account_id = a.id AND le.tenant_id = $1::UUID ${dateJoinFilter}
         WHERE a.tenant_id = $1::UUID AND a.type IN ('REVENUE', 'EXPENSE')
         GROUP BY a.type, a.code, a.name
         ORDER BY a.type, a.code`,

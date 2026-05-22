@@ -41,7 +41,10 @@ export interface SessionPayload {
 // ═══════════════════════════════════════════════════════════════
 
 function getSecret(): Uint8Array {
-  const secret = process.env.AUTH_SECRET || 'kdkmp-dev-secret-change-in-production';
+  const secret = process.env.AUTH_SECRET;
+  if (!secret) {
+    throw new Error('[Auth] AUTH_SECRET environment variable is required. Generate with: openssl rand -hex 32');
+  }
   return new TextEncoder().encode(secret);
 }
 

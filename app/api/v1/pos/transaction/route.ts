@@ -78,8 +78,8 @@ export async function POST(request: NextRequest) {
   try {
     await client.query('BEGIN');
 
-    // Set tenant context untuk RLS
-    await client.query(`SET LOCAL app.current_tenant_id = '${body.tenantId}'`);
+    // Set tenant context untuk RLS (parameterized — anti SQL injection)
+    await client.query(`SELECT set_config('app.current_tenant_id', $1, true)`, [body.tenantId]);
 
     // INSERT dengan perlindungan duplikasi
     const result = await client.query(
