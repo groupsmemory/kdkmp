@@ -17,6 +17,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { Pool } from '@neondatabase/serverless';
 import { z } from 'zod';
+import { requireAuth } from '@/lib/auth';
 
 // ═══════════════════════════════════════════════════════════════
 // VALIDASI INPUT
@@ -56,6 +57,11 @@ function getPool(): Pool {
 // ═══════════════════════════════════════════════════════════════
 
 export async function POST(request: NextRequest) {
+  // 0. Verify authentication
+  const auth = await requireAuth(request);
+  if (auth.error) return auth.error;
+  const { session } = auth;
+
   // 1. Parse & validate body
   let body: z.infer<typeof TransactionSchema>;
   try {
@@ -68,6 +74,9 @@ export async function POST(request: NextRequest) {
     );
   }
 
+  // Override tenantId from session (ignore client-provided value)
+  const tenantId = session.tenantId;
+
   // 2. Ambil idempotency key dari header (di-set oleh middleware)
   const idempotencyKey = request.headers.get('x-idempotency-key') || crypto.randomUUID();
 
@@ -79,7 +88,7 @@ export async function POST(request: NextRequest) {
     await client.query('BEGIN');
 
     // Set tenant context untuk RLS (parameterized — anti SQL injection)
-    await client.query(`SELECT set_config('app.current_tenant_id', $1, true)`, [body.tenantId]);
+    await client.query(`SELECT set_config('app.current_tenant_id', $1, true)`, [tenantId]);
 
     // INSERT dengan perlindungan duplikasi
     const result = await client.query(
@@ -87,7 +96,7 @@ export async function POST(request: NextRequest) {
        VALUES ($1::UUID, $2::UUID, $3, $4, 'COMPLETED')
        ON CONFLICT (idempotency_key) DO NOTHING
        RETURNING id`,
-      [body.tenantId, idempotencyKey, body.amount, body.description]
+      [tenantId, idempotencyKey, body.amount, body.description]
     );
 
     if (result.rows.length === 0) {

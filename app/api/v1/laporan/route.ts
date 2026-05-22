@@ -9,6 +9,7 @@
 
 import { NextRequest, NextResponse } from 'next/server';
 import { Pool } from '@neondatabase/serverless';
+import { requireAuth } from '@/lib/auth';
 
 // ═══════════════════════════════════════════════════════════════
 // DATABASE POOL
@@ -32,10 +33,15 @@ function getPool(): Pool {
 // ═══════════════════════════════════════════════════════════════
 
 export async function GET(request: NextRequest) {
+  // 0. Verify authentication
+  const auth = await requireAuth(request);
+  if (auth.error) return auth.error;
+  const { session } = auth;
+
   const { searchParams } = request.nextUrl;
   const type = searchParams.get('type') || 'jurnal';
   const period = searchParams.get('period'); // format: YYYY-MM
-  const tenantId = searchParams.get('tenantId') || 'default-tenant';
+  const tenantId = session.tenantId; // from authenticated session
 
   const db = getPool();
   const client = await db.connect();

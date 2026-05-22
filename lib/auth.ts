@@ -152,6 +152,23 @@ export async function getSession(request: NextRequest): Promise<SessionPayload |
 }
 
 /**
+ * Require authenticated session — returns session or error response
+ */
+export async function requireAuth(request: NextRequest): Promise<
+  { session: SessionPayload; error: null } | { session: null; error: NextResponse }
+> {
+  const session = await getSession(request);
+  if (!session) {
+    const { NextResponse: NR } = await import('next/server');
+    return {
+      session: null,
+      error: NR.json({ error: 'Unauthorized — session tidak valid atau expired.' }, { status: 401 }),
+    };
+  }
+  return { session, error: null };
+}
+
+/**
  * Build Set-Cookie header value for session
  */
 export function buildSessionCookie(token: string): string {
