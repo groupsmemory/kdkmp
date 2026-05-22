@@ -24,7 +24,7 @@ import { Pool } from '@neondatabase/serverless';
 const BATCH_SIZE = 1000; // Chunk size untuk mencegah Vercel timeout
 const BASE_URL = 'https://jasasaja.co.id';
 
-export default async function sitemap(): Promise<MetadataRoute['sitemap']> {
+export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const pool = new Pool({
     connectionString: process.env.NEON_DATABASE_URL,
     max: 2, // Minimal koneksi untuk sitemap generation
