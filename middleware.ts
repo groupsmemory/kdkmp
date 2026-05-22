@@ -60,7 +60,27 @@ const COMMITTED_TTL_SECONDS = 86400;  // 24 jam cache response
 export async function middleware(request: NextRequest) {
   const path = request.nextUrl.pathname;
 
-  // Hanya proses API routes
+  // ─────────────────────────────────────────────────────────────
+  // 0. PROTEKSI ROUTE (Auth Check via httpOnly Cookie)
+  // ─────────────────────────────────────────────────────────────
+  // Halaman /dashboard dan /pos memerlukan session aktif.
+  // Jika tidak ada cookie session → redirect ke /login.
+
+  const protectedPaths = ['/dashboard', '/pos'];
+  const isProtected = protectedPaths.some((p) => path === p || path.startsWith(p + '/'));
+
+  if (isProtected) {
+    const sessionCookie = request.cookies.get('kdkmp_session');
+    if (!sessionCookie?.value) {
+      const loginUrl = new URL('/login', request.url);
+      loginUrl.searchParams.set('redirect', path);
+      return NextResponse.redirect(loginUrl);
+    }
+    // Token validity is checked at page level for full verification.
+    // Middleware only checks cookie existence for performance (Edge runtime).
+  }
+
+  // Hanya proses API routes untuk rate limiting & idempotency
   if (!path.startsWith('/api/v1/')) {
     return NextResponse.next();
   }
@@ -185,5 +205,5 @@ function buildErrorResponse(message: string, status: number): NextResponse {
 // ═══════════════════════════════════════════════════════════════
 
 export const config = {
-  matcher: ['/api/v1/:path*'],
+  matcher: ['/api/v1/:path*', '/dashboard/:path*', '/pos/:path*'],
 };
