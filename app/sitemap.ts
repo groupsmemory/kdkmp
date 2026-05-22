@@ -30,7 +30,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     max: 2, // Minimal koneksi untuk sitemap generation
   });
 
-  const routes: MetadataRoute['sitemap'] = [];
+  const routes: MetadataRoute.Sitemap = [];
 
   // ─────────────────────────────────────────────────────────────
   // Static routes (selalu ada)
