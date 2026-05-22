@@ -1,20 +1,14 @@
 /**
  * ============================================================================
- * HALAMAN pSEO/GEO STATIS PER KECAMATAN
+ * HALAMAN pSEO/GEO STATIS PER KECAMATAN — KDKMP JASASAJA
  * ============================================================================
- * Cetak Biru: Gem 4 - Proteksi Free Tier
- * 
- * Menggunakan generateStaticParams() untuk pre-render 13 halaman kecamatan
- * saat build-time. Perayap AI (Gemini/Perplexity) hanya menyentuh HTML statis.
- * 
- * Biaya runtime: ZERO (disajikan dari CDN Edge)
+ * generateStaticParams() pre-render 13 halaman kecamatan saat build-time.
+ * Zero runtime cost — disajikan dari CDN Edge.
  * ============================================================================
  */
 
 import { Metadata } from 'next';
 import { notFound } from 'next/navigation';
-import { MapPin, Network, CheckCircle2, ArrowLeft } from 'lucide-react';
-import Link from 'next/link';
 
 // Data statis kecamatan - di-embed saat build
 const KECAMATAN_DATA: Record<string, { nama: string; jumlahGerai: number; kodeAwal: number; kodeSampai: number }> = {
@@ -33,16 +27,19 @@ const KECAMATAN_DATA: Record<string, { nama: string; jumlahGerai: number; kodeAw
   'pasean': { nama: 'Pasean', jumlahGerai: 9, kodeAwal: 181, kodeSampai: 189 },
 };
 
-// generateStaticParams: Pre-render semua 13 kecamatan saat build-time
-export function generateStaticParams() {
-  return Object.keys(KECAMATAN_DATA).map((kecamatan) => ({
-    kecamatan,
-  }));
+interface PageProps {
+  params: Promise<{ kecamatan: string }>;
 }
 
-// Metadata dinamis per halaman (tetap statis karena generateStaticParams)
-export function generateMetadata({ params }: { params: { kecamatan: string } }): Metadata {
-  const data = KECAMATAN_DATA[params.kecamatan];
+// Pre-render 13 kecamatan saat build-time
+export function generateStaticParams() {
+  return Object.keys(KECAMATAN_DATA).map((kecamatan) => ({ kecamatan }));
+}
+
+// Metadata per halaman
+export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
+  const { kecamatan } = await params;
+  const data = KECAMATAN_DATA[kecamatan];
   if (!data) return { title: 'Not Found' };
 
   return {
@@ -55,8 +52,9 @@ export function generateMetadata({ params }: { params: { kecamatan: string } }):
   };
 }
 
-export default function KecamatanPage({ params }: { params: { kecamatan: string } }) {
-  const data = KECAMATAN_DATA[params.kecamatan];
+export default async function KecamatanPage({ params }: PageProps) {
+  const { kecamatan } = await params;
+  const data = KECAMATAN_DATA[kecamatan];
   if (!data) notFound();
 
   // Generate daftar kode gerai statis
@@ -66,69 +64,66 @@ export default function KecamatanPage({ params }: { params: { kecamatan: string 
   );
 
   return (
-    <div className="min-h-screen bg-[#0a0a0c] text-neutral-200 font-sans">
+    <div className="min-h-screen font-sans" style={{ backgroundColor: '#0A0A0A', color: '#FFFFFF' }}>
       <div className="max-w-3xl mx-auto px-6 py-12">
         {/* Navigation */}
-        <Link
+        <a
           href="/"
-          className="inline-flex items-center gap-1 text-xs text-neutral-500 hover:text-neutral-300 transition-colors mb-8"
+          className="inline-flex items-center gap-1 text-xs font-mono mb-8"
+          style={{ color: '#666666' }}
         >
-          <ArrowLeft className="w-3 h-3" />
-          <span>Kembali ke Beranda</span>
-        </Link>
+          ← Kembali ke Beranda
+        </a>
 
         {/* Header */}
         <div className="mb-8">
-          <div className="flex items-center gap-3 mb-3">
-            <div className="p-2 bg-purple-500/10 rounded-xl">
-              <MapPin className="w-5 h-5 text-purple-400" />
-            </div>
-            <span className="text-xs text-neutral-500 uppercase tracking-wider">Kecamatan</span>
-          </div>
-          <h1 className="text-3xl font-bold text-white mb-2">{data.nama}</h1>
-          <p className="text-neutral-400">
+          <span
+            className="inline-block text-[10px] font-mono uppercase tracking-widest px-2 py-0.5 mb-3"
+            style={{ backgroundColor: '#FFFFFF', color: '#0A0A0A' }}
+          >
+            Kecamatan
+          </span>
+          <h1 className="text-3xl font-black uppercase tracking-tight">{data.nama}</h1>
+          <p className="text-sm mt-2" style={{ color: '#888888' }}>
             {data.jumlahGerai} gerai KDKMP aktif • Kabupaten Pamekasan, Madura
           </p>
         </div>
 
         {/* Stats */}
         <div className="grid grid-cols-2 gap-4 mb-8">
-          <div className="bg-[#121214] border border-white/5 rounded-2xl p-5">
-            <p className="text-xs text-neutral-500 uppercase tracking-wider mb-1">Total Gerai</p>
-            <p className="text-2xl font-bold text-white">{data.jumlahGerai}</p>
+          <div className="p-5" style={{ border: '2px solid #222222' }}>
+            <p className="text-xs font-mono uppercase tracking-widest" style={{ color: '#666666' }}>Total Gerai</p>
+            <p className="text-2xl font-black mt-1">{data.jumlahGerai}</p>
           </div>
-          <div className="bg-[#121214] border border-white/5 rounded-2xl p-5">
-            <p className="text-xs text-neutral-500 uppercase tracking-wider mb-1">Kode Range</p>
-            <p className="text-lg font-semibold text-indigo-400 font-mono">
+          <div className="p-5" style={{ border: '2px solid #222222' }}>
+            <p className="text-xs font-mono uppercase tracking-widest" style={{ color: '#666666' }}>Kode Range</p>
+            <p className="text-lg font-bold font-mono mt-1" style={{ color: '#6366F1' }}>
               PMK-{String(data.kodeAwal).padStart(3, '0')} — {String(data.kodeSampai).padStart(3, '0')}
             </p>
           </div>
         </div>
 
         {/* Daftar Gerai */}
-        <div className="bg-[#121214] border border-white/5 rounded-3xl p-6">
-          <div className="flex items-center gap-2 mb-4">
-            <Network className="w-4 h-4 text-indigo-400" />
-            <h2 className="text-sm font-semibold text-white">Daftar Gerai</h2>
-          </div>
+        <div className="p-6" style={{ border: '2px solid #222222' }}>
+          <h2 className="text-sm font-bold uppercase tracking-wider mb-4">Daftar Gerai</h2>
           <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 gap-2">
             {geraiList.map((kode) => (
               <div
                 key={kode}
-                className="flex items-center gap-1.5 px-2.5 py-1.5 bg-white/[0.02] border border-white/5 rounded-lg"
+                className="flex items-center gap-1.5 px-2.5 py-1.5"
+                style={{ border: '1px solid #333333' }}
               >
-                <CheckCircle2 className="w-3 h-3 text-emerald-400 flex-shrink-0" />
-                <span className="text-xs font-mono text-neutral-300">{kode}</span>
+                <span className="text-green-400 text-xs">✓</span>
+                <span className="text-xs font-mono" style={{ color: '#CCCCCC' }}>{kode}</span>
               </div>
             ))}
           </div>
         </div>
 
-        {/* SEO structured content */}
-        <div className="mt-8 text-xs text-neutral-600 space-y-1">
-          <p>Halaman ini di-generate secara statis saat build-time (SSG).</p>
-          <p>Data terakhir diperbarui saat deployment. Untuk data real-time, gunakan Dashboard Kasir.</p>
-        </div>
+        {/* Footer */}
+        <p className="mt-8 text-[10px] font-mono" style={{ color: '#444444' }}>
+          Halaman ini di-generate secara statis saat build-time (SSG). Zero runtime cost.
+        </p>
       </div>
     </div>
   );
