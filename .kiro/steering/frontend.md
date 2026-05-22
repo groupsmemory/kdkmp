@@ -40,10 +40,19 @@ Instruksi Master Validator dan implementasi Gem 3/4 WAJIB menang atas draf awal 
 
 ## 3. Ergonomi Antarmuka untuk Operator Desa (Paruh Baya)
 
-- Tema warna WAJIB menggunakan Mode Terang Kontras Tinggi (High-Contrast Light Mode):
-  - Background: `#FFFFFF` (putih bersih)
-  - Teks dan border: `#1A1A1A` (hitam pekat)
-  - Alasan: keterbacaan optimal di bawah sinar matahari langsung di lingkungan gerai pedesaan terbuka.
+- Tema warna WAJIB mendukung Dark Mode dan Light Mode melalui CSS Custom Properties dan `next-themes`.
+- Default tema: **Light Mode** (untuk keterbacaan optimal di bawah sinar matahari langsung di lingkungan gerai pedesaan terbuka).
+- Arsitektur tema:
+  - Library: `next-themes` v0.4.x dengan `attribute="class"` dan `enableSystem`.
+  - Provider: `<ThemeProvider>` di `app/layout.tsx` membungkus seluruh aplikasi.
+  - Toggle: Komponen `<ThemeToggle />` (48dp × 48dp) WAJIB tersedia di setiap halaman.
+  - CSS Variables: Seluruh warna WAJIB menggunakan `var(--xxx)` yang didefinisikan di `app/globals.css`.
+  - Class `.dark` pada `<html>` mengaktifkan dark mode.
+- Palet warna CSS Variables:
+  - Light: `--bg-primary: #FFFFFF`, `--text-primary: #1A1A1A`, `--border-primary: #1A1A1A`
+  - Dark: `--bg-primary: #0A0A0A`, `--text-primary: #FFFFFF`, `--border-primary: #FFFFFF`
+- DILARANG menggunakan warna hardcoded (`#FFFFFF`, `#1A1A1A`, `#0A0A0A`) langsung di komponen — WAJIB pakai CSS variables.
+- DILARANG membuat halaman baru tanpa menyertakan `<ThemeToggle />` di area header/navigasi.
 - Semua tombol interaktif dan target input WAJIB memiliki dimensi minimum **48dp × 48dp** (48 device-independent pixels).
   - Alasan: mengeliminasi kesalahan sentuh ganda (double-press) oleh administrator desa paruh baya yang belum terbiasa menggunakan sistem ERP modern.
 - Font size minimum untuk label: `text-sm` (14px). Untuk nilai moneter: `text-lg` atau lebih besar.
