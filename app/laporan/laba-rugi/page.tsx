@@ -8,6 +8,7 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import ThemeToggle from '@/components/ThemeToggle';
+import PrintButton from '@/components/PrintButton';
 
 function formatRupiah(value: number): string {
   return new Intl.NumberFormat('id-ID', {
@@ -78,6 +79,7 @@ export default function LabaRugiPage() {
               style={{ minHeight: '48px', border: '2px solid var(--border-secondary)', backgroundColor: 'var(--bg-card)', color: 'var(--text-primary)' }}
               aria-label="Filter periode"
             />
+            <PrintButton label="Cetak" />
             <ThemeToggle />
             <a href="/laporan" className="text-xs font-mono font-bold px-3 py-2 uppercase" style={{ minHeight: '48px', display: 'flex', alignItems: 'center', border: '2px solid var(--border-secondary)', color: 'var(--text-muted)' }}>
               ← Laporan

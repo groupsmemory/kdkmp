@@ -192,6 +192,7 @@ const DEFAULT_COMPLETED: Record<string, boolean> = {
   '3.3': true,  // Halaman /laporan/jurnal-umum
   '3.4': true,  // Filter per periode (bulan/tahun)
   '3.5': true,  // Kalkulator SHU & PADes (halaman terpisah)
+  '3.6': true,  // Export laporan ke PDF (PrintButton + CSS @media print)
   '3.7': true,  // Fungsi verifikasi integritas hash chain (audit API)
   // Fase 4: Payment Gateway Xendit
   '4.3': true,  // API route /api/v1/pos/create-payment (Xendit Invoice)
