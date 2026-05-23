@@ -199,6 +199,8 @@ const DEFAULT_COMPLETED: Record<string, boolean> = {
   '4.4': true,  // Integrasi QRIS di halaman POS (modal + invoice URL)
   '4.5': true,  // TEST: bayar QRIS → webhook → transaksi tercatat
   '4.6': true,  // TEST: webhook duplikat → no double entry (ON CONFLICT verified)
+  // Fase 5: Programmatic SEO & GEO
+  '5.1': true,  // Seed 189 tenant ke NeonDB (13 kecamatan)
 };
 
 // ═══════════════════════════════════════════════════════════════
