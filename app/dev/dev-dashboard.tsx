@@ -156,7 +156,7 @@ const NOTES_KEY = 'kdkmp_dev_notes';
 
 // Tasks yang sudah selesai berdasarkan implementasi aktual
 const DEFAULT_COMPLETED: Record<string, boolean> = {
-  // Fase 1: Foundation & Infrastructure
+  // Fase 1: Foundation & Infrastructure (14/15 — domain custom belum)
   '1.1': true,  // NeonDB Free created
   '1.2': true,  // schema.sql dijalankan
   '1.3': true,  // 13 tenant seed verified
@@ -166,12 +166,12 @@ const DEFAULT_COMPLETED: Record<string, boolean> = {
   '1.7': true,  // npm run build sukses
   '1.8': true,  // Deploy ke Vercel
   '1.9': true,  // Deployment live verified
-  '1.11': true, // Auth strategy: Custom JWT httpOnly cookie
+  '1.11': true, // Auth strategy: Custom JWT HMAC-SHA256 + httpOnly cookie
   '1.12': true, // Tabel users + relasi tenants (migration 001)
   '1.13': true, // Login page brutalist + dark/light mode
   '1.14': true, // Middleware: set_config tenant_id via session JWT
   '1.15': true, // Proteksi route /dashboard dan /pos
-  // Fase 2: Core POS Engine
+  // Fase 2: Core POS Engine (15/15 ✅ COMPLETE)
   '2.1': true,  // Halaman /pos dengan layout kasir
   '2.2': true,  // Dexie.js encrypted store (AES-GCM 256-bit)
   '2.3': true,  // Form input transaksi (katalog, qty, metode bayar)
@@ -181,12 +181,13 @@ const DEFAULT_COMPLETED: Record<string, boolean> = {
   '2.7': true,  // Auto-sync saat online (setupAutoSync)
   '2.8': true,  // Indikator status sync (online/offline/syncing)
   '2.9': true,  // POSLockout.tsx Zustand cash tracking
+  '2.10': true, // TEST: offline sync verified (test-offline-sync.md)
   '2.11': true, // Halaman /pos/tutup-buku
   '2.12': true, // Agregasi total kas hari ini
   '2.13': true, // API route /api/v1/pos/daily-closing
   '2.14': true, // Trigger SAK EP verified (test-trigger.js)
   '2.15': true, // Hash chain integrity verified (linkage VALID)
-  // Fase 3: Akuntansi & Laporan
+  // Fase 3: Akuntansi & Laporan (7/7 ✅ COMPLETE)
   '3.1': true,  // Halaman /laporan/neraca
   '3.2': true,  // Halaman /laporan/laba-rugi
   '3.3': true,  // Halaman /laporan/jurnal-umum
@@ -194,14 +195,16 @@ const DEFAULT_COMPLETED: Record<string, boolean> = {
   '3.5': true,  // Kalkulator SHU & PADes (halaman terpisah)
   '3.6': true,  // Export laporan ke PDF (PrintButton + CSS @media print)
   '3.7': true,  // Fungsi verifikasi integritas hash chain (audit API)
-  // Fase 4: Payment Gateway Xendit
+  // Fase 4: Payment Gateway Xendit (4/6 — 2 manual setup)
   '4.3': true,  // API route /api/v1/pos/create-payment (Xendit Invoice)
   '4.4': true,  // Integrasi QRIS di halaman POS (modal + invoice URL)
   '4.5': true,  // TEST: bayar QRIS → webhook → transaksi tercatat
   '4.6': true,  // TEST: webhook duplikat → no double entry (ON CONFLICT verified)
-  // Fase 5: Programmatic SEO & GEO
+  // Fase 5: Programmatic SEO & GEO (3/7 — 4 manual submit/verify)
   '5.1': true,  // Seed 189 tenant ke NeonDB (13 kecamatan)
-  // Fase 6: Meta Ads & CAPI
+  '5.2': true,  // generateStaticParams() → 189 paths (code ready)
+  '5.3': true,  // JSON-LD valid (GEOStructuredData + sanitasi XSS)
+  // Fase 6: Meta Ads & CAPI (3/5 — 2 manual setup)
   '6.1': true,  // Meta Pixel di halaman publik (MetaPixel component)
   '6.2': true,  // Client → CAPI dedup (trackMetaEvent with same event_id)
   '6.3': true,  // Landing page /lp/kdkmp-pamekasan (brutalist + CTA)
