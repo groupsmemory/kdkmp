@@ -197,6 +197,8 @@ const DEFAULT_COMPLETED: Record<string, boolean> = {
   // Fase 4: Payment Gateway Xendit
   '4.3': true,  // API route /api/v1/pos/create-payment (Xendit Invoice)
   '4.4': true,  // Integrasi QRIS di halaman POS (modal + invoice URL)
+  '4.5': true,  // TEST: bayar QRIS → webhook → transaksi tercatat
+  '4.6': true,  // TEST: webhook duplikat → no double entry (ON CONFLICT verified)
 };
 
 // ═══════════════════════════════════════════════════════════════
