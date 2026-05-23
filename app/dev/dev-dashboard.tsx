@@ -201,6 +201,10 @@ const DEFAULT_COMPLETED: Record<string, boolean> = {
   '4.6': true,  // TEST: webhook duplikat → no double entry (ON CONFLICT verified)
   // Fase 5: Programmatic SEO & GEO
   '5.1': true,  // Seed 189 tenant ke NeonDB (13 kecamatan)
+  // Fase 6: Meta Ads & CAPI
+  '6.1': true,  // Meta Pixel di halaman publik (MetaPixel component)
+  '6.2': true,  // Client → CAPI dedup (trackMetaEvent with same event_id)
+  '6.3': true,  // Landing page /lp/kdkmp-pamekasan (brutalist + CTA)
 };
 
 // ═══════════════════════════════════════════════════════════════
