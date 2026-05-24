@@ -77,8 +77,10 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       );
 
       for (const row of result.rows) {
+        // User-friendly slug: kecamatan-desa (e.g., /gerai/pademawu-majungan)
+        const slug = `${row.subdistrict}-${row.village}`.replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '');
         routes.push({
-          url: `${BASE_URL}/pamekasan/${row.subdistrict}/${row.village}`,
+          url: `${BASE_URL}/gerai/${slug}`,
           lastModified: new Date(row.created_at),
           changeFrequency: 'weekly',
           priority: 0.8,
