@@ -85,18 +85,31 @@ export async function POST(request: NextRequest) {
     // Set tenant context untuk RLS (parameterized — anti SQL injection)
     await client.query(`SELECT set_config('app.current_tenant_id', $1, true)`, [tenantId]);
 
-    // INSERT daily_closings — trigger SAK EP akan otomatis generate jurnal
+    // INSERT daily_closings dengan perlindungan duplikasi per hari
+    // UNIQUE (tenant_id, closing_date) mencegah trigger SAK EP fire ganda
     const result = await client.query(
-      `INSERT INTO daily_closings (tenant_id, cash_on_hand, is_locked, notes)
-       VALUES ($1::UUID, $2, $3, $4)
-       RETURNING id, closed_at`,
+      `INSERT INTO daily_closings (tenant_id, cash_on_hand, is_locked, notes, idempotency_key, closing_date)
+       VALUES ($1::UUID, $2, $3, $4, $5::UUID, (CURRENT_TIMESTAMP AT TIME ZONE 'Asia/Jakarta')::DATE)
+       ON CONFLICT (tenant_id, closing_date) DO NOTHING
+       RETURNING id, closed_at, closing_date`,
       [
         tenantId,
         body.cashOnHand,
         body.cashOnHand > 50_000_000,
         body.notes || null,
+        idempotencyKey,
       ]
     );
+
+    if (result.rows.length === 0) {
+      // Duplikat: tutup buku hari ini sudah dilakukan
+      await client.query('COMMIT');
+      return NextResponse.json({
+        success: true,
+        duplicate: true,
+        message: 'Tutup buku hari ini sudah dilakukan sebelumnya.',
+      });
+    }
 
     await client.query('COMMIT');
 
