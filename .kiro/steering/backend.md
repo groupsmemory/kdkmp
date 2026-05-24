@@ -20,6 +20,19 @@ Instruksi Master Validator dan implementasi Gem 3/4 WAJIB menang atas draf awal 
   - Jika penulisan ke NeonDB berhasil: update status kunci menjadi `COMMITTED` dengan TTL 24 jam, simpan response payload di key terpisah (`${key}:response`).
   - Jika penulisan ke NeonDB gagal atau timeout: HAPUS kunci dari Upstash Redis (`DEL`) agar client aman melakukan retry.
 - DILARANG mengimplementasikan logika idempotensi di dalam Server Action atau route handler — idempotensi WAJIB ditangani di level Edge Middleware.
+- **WAJIB menggunakan `withIdempotency()` wrapper** dari `lib/idempotency.ts` untuk setiap route handler yang melakukan operasi penulisan data finansial. Fungsi ini secara otomatis mengelola siklus PENDING → COMMITTED / DELETED tanpa perlu menulis kode Redis manual di setiap file.
+- DILARANG menulis logika update status Redis (COMMITTED/DELETED) secara manual di route handler baru — gunakan `withIdempotency()`.
+- Contoh penggunaan:
+  ```typescript
+  import { withIdempotency } from '@/lib/idempotency';
+  
+  export async function POST(request: NextRequest) {
+    return withIdempotency(request, async (idempotencyKey) => {
+      // logika bisnis di sini
+      return { data: { success: true }, status: 201 };
+    });
+  }
+  ```
 
 ## 2. Rate Limiting Tersegmentasi
 
